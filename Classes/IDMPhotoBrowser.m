@@ -474,17 +474,22 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
         fadeView.alpha = 0;
         self.view.backgroundColor = [UIColor clearColor];
     } completion:nil];
+
+    CGRect finishFrame = _senderViewOriginalFrame;
+    if ([self.delegate respondsToSelector:@selector(photoBrowser:adjustFinalOriginalFrame:)]) {
+        finishFrame = [self.delegate photoBrowser:self adjustFinalOriginalFrame:finishFrame];
+    }
     
     if(_usePopAnimation)
     {
         [self animateView:resizableImageView
-                  toFrame:_senderViewOriginalFrame
+                  toFrame:finishFrame
                completion:completion];
     }
     else
     {
         [UIView animateWithDuration:_animationDuration animations:^{
-            resizableImageView.layer.frame = _senderViewOriginalFrame;
+            resizableImageView.layer.frame = finishFrame;
         } completion:^(BOOL finished) {
             completion();
         }];
