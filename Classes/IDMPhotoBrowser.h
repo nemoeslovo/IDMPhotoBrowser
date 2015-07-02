@@ -32,6 +32,8 @@
 // Properties
 @property (nonatomic, strong) id <IDMPhotoBrowserDelegate> delegate;
 
+@property (strong) NSString *doneButtonTitle;
+
 // Toolbar customization
 @property (nonatomic) BOOL displayToolbar;
 @property (nonatomic) BOOL displayCounterLabel;
