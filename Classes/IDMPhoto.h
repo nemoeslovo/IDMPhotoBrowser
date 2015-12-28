@@ -11,8 +11,8 @@
 #import <AFNetworking/AFNetworking.h>
 
 
-typedef NSURLRequest * (^ImageRequest)(NSURLRequest *request);
-typedef void (^ImageResponse)(AFHTTPRequestOperation *operation, id responseObject, NSError *error);
+typedef NSURLRequest * (^IDMPhotoRequestBlock)(NSURLRequest *request);
+typedef void (^IDMPhotoResponseBlock)(AFHTTPRequestOperation *operation, id responseObject, NSError *error);
 
 // This class models a photo/image and it's caption
 // If you want to handle photos, caching, decompression
@@ -42,10 +42,10 @@ typedef void (^IDMProgressUpdateBlock)(CGFloat progress);
 - (id)initWithImage:(UIImage *)image;
 - (id)initWithFilePath:(NSString *)path;
 - (id)initWithURL:(NSURL *)url;
-- (id)initWithURL:(NSURL *)url urlRequest:(ImageRequest)ImageRequest responseHandler:(ImageResponse)imageResponse;
+- (id)initWithURL:(NSURL *)url requestBlock:(IDMPhotoRequestBlock)requestBlock responseBlock:(IDMPhotoResponseBlock)responseBlock;
 
-@property (nonatomic, strong) ImageRequest imageRequest;
-@property (nonatomic, strong) ImageResponse imageResponse;
+@property (nonatomic, strong) IDMPhotoRequestBlock requestBlock;
+@property (nonatomic, strong) IDMPhotoResponseBlock responseBlock;
 
 @end
 

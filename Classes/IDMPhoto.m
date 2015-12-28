@@ -118,10 +118,10 @@ caption = _caption;
 	return self;
 }
 
-- (id)initWithURL:(NSURL *)url urlRequest:(ImageRequest)imageRequest responseHandler:(ImageResponse)imageResponse {
+- (id)initWithURL:(NSURL *)url urlRequest:(IDMPhotoRequestBlock)requestBlock responseHandler:(IDMPhotoResponseBlock)responseBlock {
     if ([self initWithURL:url]) {
-        self.imageRequest = imageRequest;
-        self.imageResponse = imageResponse;
+        self.requestBlock = requestBlock;
+        self.responseBlock = responseBlock;
     }
     return self;
 }
@@ -146,8 +146,8 @@ caption = _caption;
             // Load async from web (using AFNetworking)
             NSURLRequest *request = nil;
             
-            if (self.imageRequest) {
-                request = self.imageRequest(request);
+            if (self.requestBlock) {
+                request = self.requestBlock(request);
             }
             
             if (!request) {
@@ -161,12 +161,12 @@ caption = _caption;
                 UIImage *image = responseObject;
                 self.underlyingImage = image;
                 [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
-                if (self.imageResponse) {
-                    self.imageResponse(operation, responseObject, nil);
+                if (self.responseBlock) {
+                    self.responseBlock(operation, responseObject, nil);
                 }
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                if (self.imageResponse) {
-                    self.imageResponse(operation, nil, error);
+                if (self.responseBlock) {
+                    self.responseBlock(operation, nil, error);
                 }
             }];
             
