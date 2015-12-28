@@ -10,6 +10,10 @@
 #import "IDMPhotoProtocol.h"
 #import <AFNetworking/AFNetworking.h>
 
+
+typedef NSURLRequest * (^IDMPhotoRequestBlock)(NSURLRequest *request);
+typedef void (^IDMPhotoResponseBlock)(AFHTTPRequestOperation *operation, id responseObject, NSError *error);
+
 // This class models a photo/image and it's caption
 // If you want to handle photos, caching, decompression
 // yourself then you can simply ensure your custom data model
@@ -38,6 +42,10 @@ typedef void (^IDMProgressUpdateBlock)(CGFloat progress);
 - (id)initWithImage:(UIImage *)image;
 - (id)initWithFilePath:(NSString *)path;
 - (id)initWithURL:(NSURL *)url;
+- (id)initWithURL:(NSURL *)url requestBlock:(IDMPhotoRequestBlock)requestBlock responseBlock:(IDMPhotoResponseBlock)responseBlock;
+
+@property (nonatomic, strong) IDMPhotoRequestBlock requestBlock;
+@property (nonatomic, strong) IDMPhotoResponseBlock responseBlock;
 
 @end
 

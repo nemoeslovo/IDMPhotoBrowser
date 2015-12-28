@@ -118,6 +118,14 @@ caption = _caption;
 	return self;
 }
 
+- (id)initWithURL:(NSURL *)url requestBlock:(IDMPhotoRequestBlock)requestBlock responseBlock:(IDMPhotoResponseBlock)responseBlock {
+    if ([self initWithURL:url]) {
+        self.requestBlock = requestBlock;
+        self.responseBlock = responseBlock;
+    }
+    return self;
+}
+
 #pragma mark IDMPhoto Protocol Methods
 
 - (UIImage *)underlyingImage {
@@ -136,18 +144,31 @@ caption = _caption;
             [self performSelectorInBackground:@selector(loadImageFromFileAsync) withObject:nil];
         } else if (_photoURL) {
             // Load async from web (using AFNetworking)
-            NSURLRequest *request = [[NSURLRequest alloc] initWithURL:_photoURL
-                                                          cachePolicy:NSURLRequestReturnCacheDataElseLoad
-                                                      timeoutInterval:0];
+            NSURLRequest *request = nil;
+            
+            if (self.requestBlock) {
+                request = self.requestBlock(request);
+            }
+            
+            if (!request) {
+                request = [[NSURLRequest alloc] initWithURL:_photoURL cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:0];
+            }
             
             AFHTTPRequestOperation *op = [[AFHTTPRequestOperation alloc] initWithRequest:request];
             op.responseSerializer = [AFImageResponseSerializer serializer];
-
+            
             [op setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
                 UIImage *image = responseObject;
                 self.underlyingImage = image;
                 [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
-            } failure:^(AFHTTPRequestOperation *operation, NSError *error) { }];
+                if (self.responseBlock) {
+                    self.responseBlock(operation, responseObject, nil);
+                }
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                if (self.responseBlock) {
+                    self.responseBlock(operation, nil, error);
+                }
+            }];
             
             [op setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
                 CGFloat progress = ((CGFloat)totalBytesRead)/((CGFloat)totalBytesExpectedToRead);
