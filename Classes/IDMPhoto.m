@@ -118,7 +118,7 @@ caption = _caption;
 	return self;
 }
 
-- (id)initWithURL:(NSURL *)url urlRequest:(IDMPhotoRequestBlock)requestBlock responseHandler:(IDMPhotoResponseBlock)responseBlock {
+- (id)initWithURL:(NSURL *)url requestBlock:(IDMPhotoRequestBlock)requestBlock responseBlock:(IDMPhotoResponseBlock)responseBlock {
     if ([self initWithURL:url]) {
         self.requestBlock = requestBlock;
         self.responseBlock = responseBlock;
